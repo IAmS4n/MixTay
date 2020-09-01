@@ -107,7 +107,6 @@ def dataset(dataset_name, batch_size):
             , batch_size=batch_size, shuffle=False, num_workers=WORKER, drop_last=True)
         img_size = (1,32,32)
     elif dataset_name =="cifar10":
-
         transform_train = transforms.Compose([
         transforms.RandomCrop(32, padding=4),
         transforms.RandomHorizontalFlip(),
@@ -129,7 +128,6 @@ def dataset(dataset_name, batch_size):
             , batch_size=batch_size, shuffle=False, num_workers=WORKER, drop_last=True)
         img_size = (3,32,32)
     elif dataset_name =="cifar100":
-
         transform_train = transforms.Compose([
         transforms.RandomCrop(32, padding=4),
         transforms.RandomHorizontalFlip(),
@@ -149,6 +147,31 @@ def dataset(dataset_name, batch_size):
         testloader = torch.utils.data.DataLoader(
             torchvision.datasets.CIFAR100(root='./data', train=False, download=True, transform=transform_test)
             , batch_size=batch_size, shuffle=False, num_workers=WORKER, drop_last=True)
+        img_size = (3,32,32)
+    elif dataset_name =="celeba":
+        transform_train = transforms.Compose([
+            transforms.Resize((32,32)),
+            transforms.ToTensor(),
+            transforms.Normalize((0.5, 0.5, 0.5), (1.0, 1.0, 1.0)),
+        ])
+
+        transform_test = transforms.Compose([
+            transforms.Resize((32,32)),
+            transforms.ToTensor(),
+            transforms.Normalize((0.5, 0.5, 0.5), (1.0, 1.0, 1.0)),
+        ])
+        
+        select_sex = lambda x:x[20] # 1:Man 0:Woman
+        # 5_o_Clock_Shadow Arched_Eyebrows Attractive Bags_Under_Eyes Bald Bangs Big_Lips Big_Nose Black_Hair Blond_Hair Blurry Brown_Hair Bushy_Eyebrows Chubby Double_Chin Eyeglasses Goatee Gray_Hair Heavy_Makeup High_Cheekbones Male Mouth_Slightly_Open Mustache Narrow_Eyes No_Beard Oval_Face Pale_Skin Pointy_Nose Receding_Hairline Rosy_Cheeks Sideburns Smiling Straight_Hair Wavy_Hair Wearing_Earrings Wearing_Hat Wearing_Lipstick Wearing_Necklace Wearing_Necktie Young
+        
+        # link for "img_align_celeba.zip": https://docs.google.com/uc?id=0B7EVK8r0v71pZjFTYXZWM3FlRnM
+        trainloader = torch.utils.data.DataLoader(
+        torchvision.datasets.CelebA(root='./data', target_type='attr', split="train", download=True, transform=transform_train, target_transform=select_sex)
+        , batch_size=batch_size, shuffle=True, num_workers=WORKER, drop_last=True)
+
+        testloader = torch.utils.data.DataLoader(
+        torchvision.datasets.CelebA(root='./data', target_type='attr', split="test", download=True, transform=transform_test, target_transform=select_sex)
+        , batch_size=batch_size, shuffle=False, num_workers=WORKER, drop_last=True)
         img_size = (3,32,32)
     else:
         raise
